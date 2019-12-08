@@ -2,6 +2,7 @@ package responses
 
 import (
 	"encoding/base64"
+	"strings"
 
 	"github.com/emersion/go-imap"
 	"github.com/emersion/go-sasl"
@@ -32,6 +33,11 @@ func (r *Authenticate) Handle(resp imap.Resp) error {
 	cont, ok := resp.(*imap.ContinuationReq)
 	if !ok {
 		return ErrUnhandled
+	}
+
+	//XXX: mail.ru response has `OK`
+	if strings.Contains(cont.Info, "OK") {
+		cont.Info = ""
 	}
 
 	// Empty challenge, send initial response as stated in RFC 2222 section 5.1
